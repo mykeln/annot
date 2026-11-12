@@ -64,7 +64,7 @@ PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npm run test:browser
 
 `npm test` runs the same E2E suite. The browser test follows Playwright’s [extension-testing approach](https://playwright.dev/docs/chrome-extensions). It launches the real worker and content scripts with a temporary extension copy that grants access only to the local fixture origin, because the test driver cannot click the native browser toolbar. The shipped extension has no persistent host permissions.
 
-The test covers configuration, element selection without navigation, cross-page persistence, scope, URL translation, source hints, prompt export, form-value exclusion, project isolation, note removal, narrow layouts, and closing the workspace. It produces screenshots, an actual prompt download, and a `verification.json` report under `test-results/`, including coverage limits and the exact reproduction command. It does not exercise an external production site, source checkout edits, or a live coding session.
+The tests cover configuration, element selection without navigation, cross-page persistence, scope, URL translation, source hints, prompt export, form-value exclusion, project isolation, note removal, narrow layouts, closing the workspace, and project creation on a non-secure HTTP hostname. They produce screenshots, an actual prompt download, and verification reports under `test-results/`, including coverage limits and the exact reproduction command. They do not exercise an external production site, source checkout edits, or a live coding session.
 
 Implementation:
 
@@ -73,3 +73,19 @@ Implementation:
 - `extension/core.js`: project validation, URL translation, source hints, and prompt compilation.
 - `demo/`: local fixture site.
 - `tests/browser/`: browser E2E verification.
+
+## Chrome Web Store release
+
+The store listing copy and permission disclosures are in `store/listing.md`. The hosted-policy source is `store/privacy.html`; it is copied from the exact policy shipped with the extension. The public policy is at https://www.halfcorp.co/annot-privacy.html and its website source is `public/annot-privacy.html` in the Halfcorp checkout. Run `node scripts/verify-privacy-host.js` to verify the live policy matches the bundled policy and the website is reachable; that check records HTTP integration evidence separately from browser E2E evidence.
+
+Prepare a release with:
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npm run store:assets
+PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npm run test:browser
+npm run store:collect
+```
+
+The E2E tests build `dist/annot-0.1.1.zip`, extract that ZIP, and exercise it in Chromium using fixture-only host grants. The shipped ZIP has no persistent host permissions. `store:collect` refuses to collect screenshots unless both passing browser reports match the current package hash. Packaging alone can be repeated with `npm run package`; `dist/package-report.json` records its contents and SHA-256. Packaging checks are distinct from browser E2E verification.
+
+The ZIP contains only extension runtime files and icons. Store assets, fixture data, tests, and project files are excluded. Keep the privacy-policy URL publicly accessible, and update the listing’s disclosures whenever data handling changes. Store submission/review status is recorded in `store/submission.json`.

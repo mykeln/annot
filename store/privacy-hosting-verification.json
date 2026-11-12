@@ -1,0 +1,13 @@
+{
+  "coverage": "Live HTTPS integration verification only; this is not browser E2E coverage.",
+  "result": "PASS",
+  "checkedAt": "2026-11-12T18:01:18.895Z",
+  "privacyPolicyUrl": "https://www.halfcorp.co/annot-privacy.html",
+  "policySHA256": "3e3d41533e90be24bdad44b9985e5b9fda5ffccfb66e29077b4505c4c39de88e",
+  "checks": {
+    "policyReturnsHTTP200": true,
+    "policyMatchesBundledSource": true,
+    "homepageReturnsHTTP200": true
+  },
+  "reproduce": "node scripts/verify-privacy-host.js"
+}

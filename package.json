@@ -1,12 +1,15 @@
 {
   "name": "annot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Turn live website annotations into repository-aware coding prompts.",
   "scripts": {
     "test": "playwright test",
     "test:browser": "playwright test",
+    "store:assets": "node scripts/build-store-assets.js",
+    "store:collect": "node scripts/collect-store-artifacts.js",
+    "package": "python3 scripts/package-extension.py",
     "demo": "node demo/server.js"
   },
   "engines": {

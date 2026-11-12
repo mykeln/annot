@@ -17,7 +17,7 @@
       h1 { margin:0; font-size:18px; letter-spacing:-.7px; } .sub { color:#7c7974; font-size:11px; letter-spacing:.05em; }
       .close { margin-left:auto; border:0; background:none; font-size:22px; color:#777; padding:5px; }
       nav { display:flex; padding:12px 16px 0; gap:5px; } nav button { flex:1; border:0; border-radius:8px; padding:8px; color:#77716d; background:transparent; font-size:12px; font-weight:600; } nav button.active { background:#eae5f8; color:#514083; }
-      main { padding:18px 20px; overflow:auto; flex:1; min-height:0; } footer { padding:12px 20px; border-top:1px solid #e5e2db; font-size:11px; color:#817c76; }
+      main { padding:18px 20px; overflow:auto; flex:1; min-height:0; } footer { padding:12px 20px; border-top:1px solid #e5e2db; font-size:11px; color:#817c76; } footer button { border:0;background:none;padding:0;margin-left:8px;color:#65508e;text-decoration:underline;font-size:11px; }
       .eyebrow { font-size:10px; letter-spacing:.12em; color:#8b837a; text-transform:uppercase; font-weight:700; margin:0 0 9px; } h2 { font-size:23px; line-height:1.2; letter-spacing:-.7px; margin:0 0 12px; }
       p { margin:0 0 16px; } .muted { color:#77716b; font-size:12px; } .primary { background:#302a43; border:1px solid #302a43; color:white; border-radius:9px; padding:11px 14px; width:100%; font-weight:600; }
       .primary.picking { background:#65508e; } .secondary { background:white; border:1px solid #d9d5ce; color:#40384f; border-radius:8px; padding:8px 12px; } .row { display:flex; gap:8px; align-items:center; margin:10px 0; } .row > * { min-width:0; } .row .grow { flex:1; }
@@ -36,7 +36,7 @@
     <aside class="panel" aria-label="Annot workspace">
       <header><div class="logo" aria-hidden="true">⌖</div><div><h1>annot</h1><div class="sub">SITE TO SOURCE</div></div><button class="close" aria-label="Close Annot">×</button></header>
       <nav aria-label="Workspace"><button data-view="notes">Annotations</button><button data-view="project">Project</button><button data-view="prompt">Prompt</button></nav>
-      <main></main><p id="status" role="status" aria-live="polite"></p><footer>Saved in this browser · Export when you’re ready</footer>
+      <main></main><p id="status" role="status" aria-live="polite"></p><footer>Saved in this browser · Export when you’re ready<button id="privacy">Privacy</button></footer>
     </aside>`;
   document.documentElement.append(host);
   const main = root.querySelector("main");
@@ -44,6 +44,7 @@
   const controller = new AbortController();
   const signal = controller.signal;
   let projects = [], annotations = [], projectId, view = "notes", picking = false, selected = null, hovered = null, draft = "", draftScope = "page";
+  let fieldId = 0;
 
   function status(message = "", error = false) {
     root.querySelector("#status").textContent = message;
@@ -75,7 +76,8 @@
     return node;
   }
   function field(parent, title, value = "", { textarea = false, placeholder = "", type = "text" } = {}) {
-    const id = `annot-${crypto.randomUUID()}`;
+    // Labels only need IDs unique within this workspace, including on plain HTTP.
+    const id = `annot-field-${++fieldId}`;
     const label = el("label", title); label.htmlFor = id;
     const input = el(textarea ? "textarea" : "input");
     input.id = id; input.value = value; input.placeholder = placeholder;
@@ -110,6 +112,7 @@
       setPicking(!picking); render();
     });
     main.append(pick);
+    main.append(el("p", "Selections capture the page URL, nearby text, and element details locally. Review the prompt before sharing.", "hint"));
     if (selected) renderEditor();
     else main.append(el("p", "Browse normally between selections. Selecting an element blocks its click so you can annotate links and buttons safely.", "hint"));
     if (!notes().length && !selected) {
@@ -261,9 +264,11 @@
   window.addEventListener("scroll", paint, { capture: true, passive: true, signal });
   window.addEventListener("resize", paint, { passive: true, signal });
   root.querySelectorAll("nav button").forEach((node) => node.addEventListener("click", async () => {
-    view = node.dataset.view; setPicking(false); await load(); render();
+    try { view = node.dataset.view; setPicking(false); await load(); render(); }
+    catch (error) { status(error.message, true); }
   }));
   root.querySelector("#cancel-picking").addEventListener("click", () => { setPicking(false); render(); });
+  root.querySelector("#privacy").addEventListener("click", () => { request("openPrivacy").catch((error) => status(error.message, true)); });
   root.querySelector(".close").addEventListener("click", async () => {
     try { await request("stop"); } catch { /* still allow closing after an extension reload */ }
     controller.abort(); host.remove(); delete globalThis.__annot;

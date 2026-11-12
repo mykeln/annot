@@ -30,11 +30,15 @@ async function mutate(message, sender) {
     await chrome.storage.session.remove(`tab:${sender.tab.id}`);
     return true;
   }
+  if (message.type === "openPrivacy") {
+    await chrome.tabs.create({ url: chrome.runtime.getURL("privacy.html") });
+    return true;
+  }
   throw new Error("Unknown Annot operation.");
 }
 
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  if (sender.id !== chrome.runtime.id || !sender.tab || !["saveProject", "saveAnnotation", "deleteAnnotation", "stop"].includes(message.type)) return;
+  if (sender.id !== chrome.runtime.id || !sender.tab || !["saveProject", "saveAnnotation", "deleteAnnotation", "stop", "openPrivacy"].includes(message.type)) return;
   const operation = queue.then(() => mutate(message, sender));
   queue = operation.catch(() => {});
   operation.then((data) => respond({ ok: true, data }), (error) => respond({ ok: false, error: error.message }));

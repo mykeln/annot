@@ -1,0 +1,43 @@
+{
+  "coverage": "Browser E2E using the packaged extension on a non-secure HTTP hostname resolved to the local fixture; a temporary test-only host grant substitutes for toolbar activation.",
+  "result": "PASS",
+  "capabilities": {
+    "randomUUID": "undefined",
+    "secureContext": false
+  },
+  "workspaceStatus": "Project mapping saved.",
+  "exercised": [
+    "plain HTTP origin loaded without a secure context",
+    "Project tab opened and form heading rendered",
+    "project form fields rendered",
+    "first project created",
+    "element selected, annotation saved, and prompt compiled",
+    "second project created"
+  ],
+  "pageErrors": [],
+  "package": {
+    "archive": "annot-0.1.1.zip",
+    "version": "0.1.1",
+    "sha256": "63f9f8e37e84c414f5644f010a0fbdc0a5807328d155173682cbc7bc8026aea9",
+    "files": [
+      "background.js",
+      "content.js",
+      "core.js",
+      "icons/icon-128.png",
+      "icons/icon-16.png",
+      "icons/icon-32.png",
+      "icons/icon-48.png",
+      "manifest.json",
+      "privacy.html"
+    ],
+    "reproduce": "npm run package",
+    "result": "PASS: manifest, icon dimensions, and package contents validated; this is packaging validation, not browser E2E coverage"
+  },
+  "reproduce": "PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npm run test:browser -- project-http.spec.js",
+  "artifacts": [
+    "project-http.png"
+  ],
+  "limitations": [
+    "Fixture site; native toolbar activation and a live coding session are not exercised"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "coverage": "Browser E2E in Chromium using the packaged ZIP and its real MV3 worker and content scripts; a temporary extracted copy grants the fixture origin host access instead of a browser-toolbar gesture.",
+  "result": "PASS",
+  "package": {
+    "archive": "annot-0.1.1.zip",
+    "version": "0.1.1",
+    "sha256": "63f9f8e37e84c414f5644f010a0fbdc0a5807328d155173682cbc7bc8026aea9",
+    "files": [
+      "background.js",
+      "content.js",
+      "core.js",
+      "icons/icon-128.png",
+      "icons/icon-16.png",
+      "icons/icon-32.png",
+      "icons/icon-48.png",
+      "manifest.json",
+      "privacy.html"
+    ],
+    "reproduce": "npm run package",
+    "result": "PASS: manifest, icon dimensions, and package contents validated; this is packaging validation, not browser E2E coverage"
+  },
+  "exercised": [
+    "project configuration and validation",
+    "element selection without following links",
+    "cross-page persistence and reload",
+    "page and shared scopes",
+    "prefix/query/fragment URL translation",
+    "source hints",
+    "exclusion of form values",
+    "clipboard feedback and prompt download",
+    "project isolation",
+    "annotation deletion",
+    "wrong-route rejection",
+    "narrow viewport",
+    "close stops reinjection"
+  ],
+  "reproduce": "npm ci && PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npx playwright install chromium && PLAYWRIGHT_BROWSERS_PATH=/private/tmp/annot-browsers npm run test:browser",
+  "limitations": [
+    "Native toolbar activation is not automated",
+    "No live external site, source checkout, or Codex session was exercised"
+  ],
+  "artifacts": [
+    "annot-prompt.txt",
+    "annot-narrow.png",
+    "store-select.png",
+    "store-annotations.png",
+    "store-prompt.png",
+    "../annot-prompt.png"
+  ]
+}

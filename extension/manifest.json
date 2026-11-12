@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Annot — site to source",
+  "version": "0.1.0",
+  "description": "Annotate live elements and copy a prompt grounded in your local project.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "Open Annot on this page" },
+  "minimum_chrome_version": "102"
+}
